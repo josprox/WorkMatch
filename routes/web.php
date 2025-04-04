@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
     // Aquí van tus rutas del CRUD.
     Route::resource('/empresas', EmpresaController::class);
+    Route::resource('/vacantes', App\Http\Controllers\VacanteController::class);
     // Fin de las rutas.
 });
 
