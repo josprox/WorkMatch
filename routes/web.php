@@ -22,8 +22,6 @@ Route::middleware('auth')->group(function () {
     // Fin de las rutas.
 });
 
-
 Route::get('/register', function () {
     return redirect('/'); // Redirige a la página de login
 });
-

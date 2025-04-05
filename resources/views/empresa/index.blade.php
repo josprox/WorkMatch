@@ -87,6 +87,7 @@
                                     
 										<th>Nombre</th>
 										<th>Correo</th>
+										<th>Contra</th>
 										<th>Ubicacion</th>
 										<th>Telefono</th>
 
@@ -101,10 +102,11 @@
                                                    aria-label="Select empresa"></td>
                                         <td>{{ ++$i }}</td>
                                         
-											<td>{{ $empresa->nombre }}</td>
-											<td>{{ $empresa->correo }}</td>
-											<td>{{ $empresa->ubicacion }}</td>
-											<td>{{ $empresa->telefono }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->nombre }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->correo }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->contra }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->ubicacion }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->telefono }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">

@@ -1,6 +1,6 @@
 @extends('tablar::page')
 
-@section('title', 'Ver empresa')
+@section('title', 'View Empresa')
 
 @section('content')
     <!-- Page header -->
@@ -45,7 +45,7 @@
                     @endif
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Detalles de la empresa</h3>
+                        <h3 class="card-title">Detalles de la empresa</h3>
                         </div>
                         <div class="card-body">
                             
@@ -56,6 +56,10 @@
 <div class="form-group">
 <strong>Correo:</strong>
 {{ $empresa->correo }}
+</div>
+<div class="form-group">
+<strong>Contra:</strong>
+{{ $empresa->contra }}
 </div>
 <div class="form-group">
 <strong>Ubicacion:</strong>
