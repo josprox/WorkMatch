@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('/empresas', EmpresaController::class);
     Route::resource('/vacantes', VacanteController::class);
     Route::resource('/usuarios', UsuarioController::class);
+    Route::resource('/candidaturas', App\Http\Controllers\CandidaturaController::class);
     // Fin de las rutas.
 });
 
