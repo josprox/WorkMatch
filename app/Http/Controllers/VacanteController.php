@@ -33,7 +33,8 @@ class VacanteController extends Controller
     public function create()
     {
         $vacante = new Vacante();
-        return view('vacante.create', compact('vacante'));
+        $empresas = \App\Models\Empresa::orderBy('nombre')->get(); // Obtener todas las empresas
+        return view('vacante.create', compact('vacante', 'empresas'));
     }
 
     /**
@@ -74,8 +75,8 @@ class VacanteController extends Controller
     public function edit($id)
     {
         $vacante = Vacante::find($id);
-
-        return view('vacante.edit', compact('vacante'));
+        $empresas = \App\Models\Empresa::orderBy('nombre')->get(); // Obtener todas las empresas
+        return view('vacante.edit', compact('vacante', 'empresas'));
     }
 
     /**

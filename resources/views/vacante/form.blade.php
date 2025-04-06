@@ -40,12 +40,11 @@
     </div>
 </div>
 <div class="form-group mb-3">
-    <label class="form-label"> {{ Form::label('empresa_id') }}</label>
+    <label class="form-label">{{ Form::label('empresa_id', 'Empresa') }}</label>
     <div>
-        {{ Form::text('empresa_id', $vacante->empresa_id, ['class' => 'form-control' .
-        ($errors->has('empresa_id') ? ' is-invalid' : ''), 'placeholder' => 'Empresa Id']) }}
+        {{ Form::select('empresa_id', $empresas->pluck('nombre', 'id'), $vacante->empresa_id, ['class' => 'form-control' . ($errors->has('empresa_id') ? ' is-invalid' : ''), 'placeholder' => 'Seleccione una empresa']) }}
         {!! $errors->first('empresa_id', '<div class="invalid-feedback">:message</div>') !!}
-        <small class="form-hint">ID de la empresa.</small>
+        <small class="form-hint">Seleccione la empresa.</small>
     </div>
 </div>
 
