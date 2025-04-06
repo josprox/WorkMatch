@@ -108,58 +108,55 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Obtener los detalles del usuario por ID y token_user.
+     * Mostrar la información de un usuario usando el token_user.
      *
-     * @param  int  $id
-     * @param  string  $token_user
+     * @param  string  $token
      * @return \Illuminate\Http\Response
      */
-    public function DatosUsuario($id, $token)
+    public function DatosUsuario($token)
     {
-        // Validar si el token_user en la cabecera coincide con el del usuario
-        $usuario = Usuario::find($id);
+        // Buscar al usuario por el token_user
+        $usuario = Usuario::where('token_user', $token)->first();
 
         if (!$usuario) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
-        }
-
-        if ($usuario->token_user != $token) {
-            return response()->json(['message' => 'Token inválido'], 403);
         }
 
         return response()->json($usuario);
     }
 
     /**
-     * Actualizar las especialidades y curriculum del usuario.
+     * Actualizar las especialidades y curriculum del usuario por ID y token_user.
      *
      * @param  int  $id
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function actualizarDetalles($id, Request $request)
+    public function actualizarDetalles($token, Request $request)
     {
-        $usuario = Usuario::find($id);
+        // Buscar al usuario por token_user
+        $usuario = Usuario::where('token_user', $token)->first();
 
         if (!$usuario) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
-        // Verificar el token_user
-        if ($usuario->token_user !== $request->header('token_user')) {
-            return response()->json(['message' => 'Token inválido'], 403);
-        }
-
-        // Validación de los campos permitidos para actualizar
+        // Validar los campos que se pueden actualizar (especialidades y curriculum)
         $request->validate([
             'especialidades' => 'nullable|string',
             'curriculum' => 'nullable|string',
         ]);
 
-        // Solo actualizar los campos permitidos
-        $usuario->especialidades = $request->input('especialidades', $usuario->especialidades);
-        $usuario->curriculum = $request->input('curriculum', $usuario->curriculum);
+        // Actualizar solo los campos permitidos
+        if ($request->has('especialidades')) {
+            $usuario->especialidades = $request->input('especialidades');
+        }
 
+        if ($request->has('curriculum')) {
+            $usuario->curriculum = $request->input('curriculum');
+        }
+
+        // Guardar los cambios
         $usuario->save();
 
         return response()->json([

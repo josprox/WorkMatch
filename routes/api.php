@@ -11,5 +11,5 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/empresas', [EmpresaController::class, 'crearEmpresa']);
 Route::get('/empresas/{id}', [EmpresaController::class, 'DetallesEmpresa']);
-Route::get('usuarios/{id}/{token}', [UsuarioController::class, 'DatosUsuario'])->name('api.usuarios.DatosUsuario');
-Route::put('usuarios/{id}', [UsuarioController::class, 'actualizarDetalles'])->name('api.usuarios.actualizarDetalles');
+Route::get('usuarios/{token}', [UsuarioController::class, 'DatosUsuario'])->name('api.usuarios.DatosUsuario');
+Route::put('usuarios/{token}', [UsuarioController::class, 'actualizarDetalles'])->name('api.usuarios.actualizarDetalles');
