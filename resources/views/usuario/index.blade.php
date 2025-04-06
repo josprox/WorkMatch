@@ -1,7 +1,7 @@
 @extends('tablar::page')
 
 @section('title')
-    Empresas
+    Usuarios
 @endsection
 
 @section('content')
@@ -15,13 +15,13 @@
                         Lista de
                     </div>
                     <h2 class="page-title">
-                        {{ __('Empresas ') }}
+                        {{ __('usuarios ') }}
                     </h2>
                 </div>
                 <!-- Page title actions -->
                 <div class="col-12 col-md-auto ms-auto d-print-none">
                     <div class="btn-list">
-                        <a href="{{ route('empresas.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                        <a href="{{ route('usuarios.create') }}" class="btn btn-primary d-none d-sm-inline-block">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -30,7 +30,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
-                            Crear una empresa
+                            Crear usuario
                         </a>
                     </div>
                 </div>
@@ -47,12 +47,12 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Empresas</h3>
+                            <h3 class="card-title">Usuarios</h3>
                         </div>
                         <div class="card-body border-bottom py-3">
                             <div class="d-flex">
                                 <div class="text-muted">
-                                    Mostrar
+                                    Mostrando
                                     <div class="mx-2 d-inline-block">
                                         <input type="text" class="form-control form-control-sm" value="10" size="3"
                                                aria-label="Invoices count">
@@ -85,47 +85,43 @@
                                         </svg>
                                     </th>
                                     
-										<th>Nombre</th>
-										<th>Correo</th>
-										<th>Contra</th>
-										<th>Ubicacion</th>
-										<th>Telefono</th>
+										<th>Token del usuario</th>
+										<th>Especialidades</th>
+										<th>Curriculum</th>
 
                                     <th class="w-1"></th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
-                                @forelse ($empresas as $empresa)
+                                @forelse ($usuarios as $usuario)
                                     <tr>
                                         <td><input class="form-check-input m-0 align-middle" type="checkbox"
-                                                   aria-label="Select empresa"></td>
+                                                   aria-label="Select usuario"></td>
                                         <td>{{ ++$i }}</td>
                                         
-											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->nombre }}</td>
-											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->correo }}</td>
-											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->contra }}</td>
-											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->ubicacion }}</td>
-											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $empresa->telefono }}</td>
+											<td>{{ $usuario->token_user }}</td>
+											<td>{{ $usuario->especialidades }}</td>
+											<td>{{ $usuario->curriculum }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">
                                                 <div class="dropdown">
                                                     <button class="btn dropdown-toggle align-text-top"
                                                             data-bs-toggle="dropdown">
-                                                        Acción
+                                                        Actiones
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a class="dropdown-item"
-                                                           href="{{ route('empresas.show',$empresa->id) }}">
+                                                           href="{{ route('usuarios.show',$usuario->id) }}">
                                                             Ver
                                                         </a>
                                                         <a class="dropdown-item"
-                                                           href="{{ route('empresas.edit',$empresa->id) }}">
+                                                           href="{{ route('usuarios.edit',$usuario->id) }}">
                                                             Editar
                                                         </a>
                                                         <form
-                                                            action="{{ route('empresas.destroy',$empresa->id) }}"
+                                                            action="{{ route('usuarios.destroy',$usuario->id) }}"
                                                             method="POST">
                                                             @csrf
                                                             @method('DELETE')
@@ -142,14 +138,14 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <td>Información no encontrada</td>
+                                    <td>No se encontró nada</td>
                                 @endforelse
                                 </tbody>
 
                             </table>
                         </div>
                        <div class="card-footer d-flex align-items-center">
-                            {!! $empresas->links('tablar::pagination') !!}
+                            {!! $usuarios->links('tablar::pagination') !!}
                         </div>
                     </div>
                 </div>

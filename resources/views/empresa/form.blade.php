@@ -18,6 +18,15 @@
     </div>
 </div>
 <div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('contra') }}</label>
+    <div>
+        {{ Form::text('contra', $empresa->contra, ['class' => 'form-control' .
+        ($errors->has('contra') ? ' is-invalid' : ''), 'placeholder' => 'Contra']) }}
+        {!! $errors->first('contra', '<div class="invalid-feedback">:message</div>') !!}
+        <small class="form-hint">Ingresa la <b>contraseña</b> de acceso para la empresa.</small>
+    </div>
+</div>
+<div class="form-group mb-3">
     <label class="form-label">   {{ Form::label('ubicacion') }}</label>
     <div>
         {{ Form::text('ubicacion', $empresa->ubicacion, ['class' => 'form-control' .
@@ -38,7 +47,7 @@
 
     <div class="form-footer">
         <div class="text-end">
-            <div class="d-flex">
+        <div class="d-flex">
                 <a href="/empresas" class="btn btn-danger">Cancelar</a>
                 <button type="submit" class="btn btn-primary ms-auto ajax-submit">Enviar</button>
             </div>

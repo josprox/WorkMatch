@@ -160,7 +160,12 @@ return [
                     'text' => 'Empresas',
                     'url' => 'empresas',
                     'icon' => 'ti ti-users-group',
-                ]
+                ],
+                [
+                    'text' => 'Usuarios',
+                    'url' => 'usuarios',
+                    'icon' => 'ti ti-users',
+                ],
             ],
         ],
 

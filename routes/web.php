@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\EmpresaController;
+use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\VacanteController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,13 +20,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
     // Aquí van tus rutas del CRUD.
     Route::resource('/empresas', EmpresaController::class);
-    Route::resource('/vacantes', App\Http\Controllers\VacanteController::class);
+    Route::resource('/vacantes', VacanteController::class);
+    Route::resource('/usuarios', UsuarioController::class);
     Route::resource('/candidaturas', App\Http\Controllers\CandidaturaController::class);
     // Fin de las rutas.
 });
 
-
 Route::get('/register', function () {
     return redirect('/'); // Redirige a la página de login
 });
-
