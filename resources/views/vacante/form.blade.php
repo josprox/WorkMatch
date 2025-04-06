@@ -42,7 +42,14 @@
 <div class="form-group mb-3">
     <label class="form-label">{{ Form::label('empresa_id', 'Empresa') }}</label>
     <div>
-        {{ Form::select('empresa_id', $empresas->pluck('nombre', 'id'), $vacante->empresa_id, ['class' => 'form-control' . ($errors->has('empresa_id') ? ' is-invalid' : ''), 'placeholder' => 'Seleccione una empresa']) }}
+        <select name="empresa_id" class="form-control select2 {{ $errors->has('empresa_id') ? ' is-invalid' : '' }}">
+            <option value="">Seleccione una empresa</option>
+            @foreach($empresas as $empresa)
+                <option value="{{ $empresa->id }}" {{ $vacante->empresa_id == $empresa->id ? 'selected' : '' }}>
+                    {{ $empresa->nombre }}
+                </option>
+            @endforeach
+        </select>
         {!! $errors->first('empresa_id', '<div class="invalid-feedback">:message</div>') !!}
         <small class="form-hint">Seleccione la empresa.</small>
     </div>
