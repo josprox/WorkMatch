@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     // Aquí van tus rutas del CRUD.
     Route::resource('/empresas', EmpresaController::class);
     Route::resource('/vacantes', App\Http\Controllers\VacanteController::class);
+    Route::resource('/candidaturas', App\Http\Controllers\CandidaturaController::class);
     // Fin de las rutas.
 });
 
