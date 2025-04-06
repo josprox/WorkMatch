@@ -102,11 +102,11 @@
                                                    aria-label="Select vacante"></td>
                                         <td>{{ ++$i }}</td>
                                         
-											<td>{{ $vacante->titulo }}</td>
-											<td>{{ $vacante->descripcion }}</td>
-											<td>{{ $vacante->sueldo }}</td>
-											<td>{{ $vacante->modalidad }}</td>
-											<td>{{ $vacante->empresa_id }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $vacante->titulo }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $vacante->descripcion }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $vacante->sueldo }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $vacante->modalidad }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $vacante->empresa_id }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">

@@ -169,6 +169,25 @@ return [
             ],
         ],
 
+        [
+            'text' => 'movimientos',
+            'url' => '#',
+            'icon' => 'ti ti-alert-square-rounded',
+            'active' => ['support1'],
+            'submenu' => [
+                [
+                    'text' => 'Candidaturas',
+                    'url' => 'candidaturas',
+                    'icon' => 'ti ti-address-book',
+                ],
+                [
+                    'text' => 'vacantes',
+                    'url' => 'vacantes',
+                    'icon' => 'ti ti-align-box-top-right',
+                ],
+            ],
+        ],
+
     ],
 
     /*
