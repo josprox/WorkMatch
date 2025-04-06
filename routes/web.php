@@ -25,3 +25,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/register', function () {
     return redirect('/'); // Redirige a la página de login
 });
+
+// Configuración Modo API Rest
+Route::prefix('api')
+    ->middleware('api')
+    ->group(base_path('routes/api.php'));

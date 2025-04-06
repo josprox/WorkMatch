@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empresa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class EmpresaController
@@ -106,4 +107,45 @@ class EmpresaController extends Controller
         return redirect()->route('empresas.index')
             ->with('success', 'Empresa deleted successfully');
     }
+
+    // Crear nueva empresa
+    public function crearEmpresa(Request $request)
+    {
+        $validated = $request->validate(Empresa::$rules);
+
+        $empresa = Empresa::create($validated);
+
+        return response()->json([
+            'message' => 'Empresa creada correctamente',
+            'empresa' => $empresa
+        ], 201);
+    }
+
+    public function DetallesEmpresa($id, Request $request)
+{
+    // Buscar la empresa por su ID
+    $empresa = Empresa::find($id);
+
+    // Si no se encuentra la empresa, devolver un mensaje de error
+    if (!$empresa) {
+        return response()->json(['message' => 'Empresa no encontrada'], 404);
+    }
+
+    // Si la contraseña no es proporcionada o no es correcta
+    if (!$request->has('password') || !Hash::check($request->input('password'), $empresa->contra)) {
+        // Si no se pasa la contraseña o es incorrecta, devolver solo nombre, correo y ubicación
+        $empresaDatos = [
+            'nombre' => $empresa->nombre,
+            'correo' => $empresa->correo,
+            'ubicacion' => $empresa->ubicacion,
+        ];
+    } else {
+        // Si la contraseña es correcta, devolver toda la información de la empresa
+        $empresaDatos = $empresa;
+    }
+
+    // Retornar los datos de la empresa en formato JSON
+    return response()->json($empresaDatos);
+}
+
 }
