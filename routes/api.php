@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\VacanteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,6 @@ Route::get('usuarios/{token}', [UsuarioController::class, 'DatosUsuario'])->name
 Route::post('usuarios', [UsuarioController::class, 'crearUsuario'])->name('api.usuarios.crearUsuario');
 Route::put('usuarios/{token}', [UsuarioController::class, 'actualizarDetalles'])->name('api.usuarios.actualizarDetalles');
 Route::delete('usuarios/{token_user}', [UsuarioController::class, 'eliminarUsuarioPorToken']);
+
+// CRUD Vacantes
+Route::get('vacantes', [VacanteController::class, 'consultaVacantes']);

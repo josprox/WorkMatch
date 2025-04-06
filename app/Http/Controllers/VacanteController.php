@@ -108,4 +108,20 @@ class VacanteController extends Controller
         return redirect()->route('vacantes.index')
             ->with('success', 'Vacante deleted successfully');
     }
+
+    public function consultaVacantes()
+    {
+        $vacantes = Vacante::select(
+            'vacantes.titulo',
+            'vacantes.descripcion',
+            'vacantes.sueldo',
+            'vacantes.modalidad',
+            'empresas.id as empresa_id',
+            'empresas.nombre as empresa_nombre'
+        )
+            ->join('empresas', 'vacantes.empresa_id', '=', 'empresas.id')
+            ->paginate(10); // Quita esto si no quieres paginar
+
+        return response()->json($vacantes);
+    }
 }
