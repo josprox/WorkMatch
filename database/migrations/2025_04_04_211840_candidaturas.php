@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('token_user', 128); // referencia a usuarios.token_user
             $table->unsignedBigInteger('empresa_id'); // quien ofrece
             $table->unsignedBigInteger('vacante_id')->nullable(); // opcional vinculación a vacante específica
+            $table->string('estado',100)->nullable(); // Estado de la coandidatura
 
             $table->foreign('token_user')->references('token_user')->on('usuarios')->onDelete('cascade');
             $table->foreign('empresa_id')->references('id')->on('empresas')->onDelete('cascade');

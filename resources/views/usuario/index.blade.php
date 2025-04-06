@@ -100,9 +100,9 @@
                                                    aria-label="Select usuario"></td>
                                         <td>{{ ++$i }}</td>
                                         
-											<td>{{ $usuario->token_user }}</td>
-											<td>{{ $usuario->especialidades }}</td>
-											<td>{{ $usuario->curriculum }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $usuario->token_user }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $usuario->especialidades }}</td>
+											<td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">{{ $usuario->curriculum }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">
