@@ -106,4 +106,65 @@ class UsuarioController extends Controller
         return redirect()->route('usuarios.index')
             ->with('success', 'Usuario deleted successfully');
     }
+
+    /**
+     * Obtener los detalles del usuario por ID y token_user.
+     *
+     * @param  int  $id
+     * @param  string  $token_user
+     * @return \Illuminate\Http\Response
+     */
+    public function DatosUsuario($id, $token)
+    {
+        // Validar si el token_user en la cabecera coincide con el del usuario
+        $usuario = Usuario::find($id);
+
+        if (!$usuario) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        if ($usuario->token_user != $token) {
+            return response()->json(['message' => 'Token inválido'], 403);
+        }
+
+        return response()->json($usuario);
+    }
+
+    /**
+     * Actualizar las especialidades y curriculum del usuario.
+     *
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function actualizarDetalles($id, Request $request)
+    {
+        $usuario = Usuario::find($id);
+
+        if (!$usuario) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        // Verificar el token_user
+        if ($usuario->token_user !== $request->header('token_user')) {
+            return response()->json(['message' => 'Token inválido'], 403);
+        }
+
+        // Validación de los campos permitidos para actualizar
+        $request->validate([
+            'especialidades' => 'nullable|string',
+            'curriculum' => 'nullable|string',
+        ]);
+
+        // Solo actualizar los campos permitidos
+        $usuario->especialidades = $request->input('especialidades', $usuario->especialidades);
+        $usuario->curriculum = $request->input('curriculum', $usuario->curriculum);
+
+        $usuario->save();
+
+        return response()->json([
+            'message' => 'Usuario actualizado correctamente',
+            'usuario' => $usuario
+        ]);
+    }
 }
