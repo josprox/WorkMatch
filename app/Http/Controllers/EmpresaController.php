@@ -141,7 +141,7 @@ class EmpresaController extends Controller
             'correo' => 'required|email',
             'contra' => 'nullable|string',
         ]);
-        
+
         // Buscar la empresa por su correo
         $empresa = Empresa::where('correo', $validated['correo'])->first();
 
@@ -196,5 +196,79 @@ class EmpresaController extends Controller
         return response()->json([
             'message' => 'Empresa eliminada correctamente'
         ], 200);
+    }
+
+    public function actualizarEmpresa(Request $request)
+    {
+        // Validar los campos requeridos
+        $validated = $request->validate([
+            'correo' => 'required|email',
+            'contra' => 'required|string',
+            'nombre' => 'sometimes|string',
+            'ubicacion' => 'sometimes|string',
+            'telefono' => 'sometimes|string',
+        ]);
+
+        // Buscar la empresa por correo
+        $empresa = Empresa::where('correo', $validated['correo'])->first();
+
+        // Validar existencia
+        if (!$empresa) {
+            return response()->json(['message' => 'Empresa no encontrada'], 404);
+        }
+
+        // Validar contraseña
+        if (!Hash::check($validated['contra'], $empresa->contra)) {
+            return response()->json(['message' => 'Contraseña incorrecta'], 401);
+        }
+
+        // Actualizar los campos permitidos si están presentes
+        if ($request->has('nombre')) {
+            $empresa->nombre = $request->input('nombre');
+        }
+
+        if ($request->has('ubicacion')) {
+            $empresa->ubicacion = $request->input('ubicacion');
+        }
+
+        if ($request->has('telefono')) {
+            $empresa->telefono = $request->input('telefono');
+        }
+
+        $empresa->save();
+
+        return response()->json([
+            'message' => 'Empresa actualizada correctamente',
+            'empresa' => $empresa
+        ]);
+    }
+
+    public function cambiarContraEmpresa(Request $request)
+    {
+        // Validar los datos necesarios
+        $validated = $request->validate([
+            'correo' => 'required|email',
+            'contra_actual' => 'required|string',
+            'nueva_contra' => 'required|string|min:6', // se espera campo "nueva_contra_confirmation"
+        ]);
+
+        // Buscar empresa por correo
+        $empresa = Empresa::where('correo', $validated['correo'])->first();
+
+        // Si no existe
+        if (!$empresa) {
+            return response()->json(['message' => 'Empresa no encontrada'], 404);
+        }
+
+        // Verificar contraseña actual
+        if (!Hash::check($validated['contra_actual'], $empresa->contra)) {
+            return response()->json(['message' => 'La contraseña actual es incorrecta'], 401);
+        }
+
+        // Cambiar contraseña
+        $empresa->contra = bcrypt($validated['nueva_contra']);
+        $empresa->save();
+
+        return response()->json(['message' => 'Contraseña actualizada correctamente'], 200);
     }
 }
