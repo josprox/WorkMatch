@@ -136,4 +136,39 @@ class VacanteController extends Controller
             'per_page' => $vacantes->perPage()
         ]);
     }
+    public function consultaVacantePorId(Request $request, $id)
+    {
+        // Obtener el número de elementos por página (si no se proporciona, usa 10 por defecto)
+        $perPage = $request->input('per_page', 10); // 'per_page' en la URL
+
+        // Buscar la vacante por su ID
+        $vacante = Vacante::select(
+            'vacantes.titulo',
+            'vacantes.descripcion',
+            'vacantes.sueldo',
+            'vacantes.modalidad',
+            'empresas.id as empresa_id',
+            'empresas.nombre as empresa_nombre'
+        )
+            ->join('empresas', 'vacantes.empresa_id', '=', 'empresas.id')
+            ->where('vacantes.id', $id) // Filtrar por ID de vacante
+            ->orderBy('vacantes.updated_at', 'desc') // Ordenar por 'updated_at' descendente
+            ->paginate($perPage); // Usar el valor de per_page
+
+        // Verificar si la vacante existe
+        if ($vacante->isEmpty()) {
+            return response()->json([
+                'message' => 'Vacante no encontrada.'
+            ], 404);
+        }
+
+        // Incluir la paginación en la respuesta
+        return response()->json([
+            'vacantes' => $vacante->items(), // Resultados de la página actual (solo debería ser una vacante)
+            'current_page' => $vacante->currentPage(),
+            'total_pages' => $vacante->lastPage(),
+            'total_results' => $vacante->total(),
+            'per_page' => $vacante->perPage()
+        ]);
+    }
 }
