@@ -164,4 +164,52 @@ class UsuarioController extends Controller
             'usuario' => $usuario
         ]);
     }
+    public function crearUsuario(Request $request)
+    {
+        // Validar los datos que se recibirán para la creación del usuario
+        $validated = $request->validate([
+            'token_user' => 'required|string|uuid', // Aceptar UUID en el campo token_user
+            'especialidades' => 'required|string',
+            'curriculum' => 'required|string',
+        ]);
+
+        // Verificar si el usuario con el mismo token_user ya existe
+        $usuarioExistente = Usuario::where('token_user', $validated['token_user'])->first();
+
+        if ($usuarioExistente) {
+            // Si el usuario ya existe, devolver un mensaje de error
+            return response()->json(['message' => 'El usuario con este token ya existe'], 409); // 409 es el código de respuesta para conflicto
+        }
+
+        // Crear el usuario con los datos validados
+        $usuario = Usuario::create([
+            'token_user' => $validated['token_user'], // Usar el UUID proporcionado por el cliente
+            'especialidades' => $validated['especialidades'],
+            'curriculum' => $validated['curriculum'],
+        ]);
+
+        // Devolver una respuesta JSON indicando que el usuario se ha creado correctamente
+        return response()->json([
+            'message' => 'Usuario creado exitosamente',
+            'usuario' => $usuario
+        ], 201); // 201 es el código de respuesta para 'Creado'
+    }
+
+
+    public function eliminarUsuarioPorToken($token_user)
+    {
+        // Buscar al usuario por el token_user
+        $usuario = Usuario::where('token_user', $token_user)->first();
+
+        // Si el usuario no existe, devolver un mensaje de error
+        if (!$usuario) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        // Eliminar el usuario
+        $usuario->delete();
+
+        // Devolver una respuesta JSON indicando que el usuario ha sido eliminado
+        return response()->json(['message' => 'Usuario eliminado exitosamente']);
+    }
 }

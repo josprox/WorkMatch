@@ -10,6 +10,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/empresas', [EmpresaController::class, 'crearEmpresa']);
-Route::get('/empresas/{id}', [EmpresaController::class, 'DetallesEmpresa']);
+Route::get('/empresas', [EmpresaController::class, 'DetallesEmpresa']);
+Route::delete('empresas/eliminar', [EmpresaController::class, 'eliminarEmpresa']);
 Route::get('usuarios/{token}', [UsuarioController::class, 'DatosUsuario'])->name('api.usuarios.DatosUsuario');
+Route::post('usuarios', [UsuarioController::class, 'crearUsuario'])->name('api.usuarios.crearUsuario');
 Route::put('usuarios/{token}', [UsuarioController::class, 'actualizarDetalles'])->name('api.usuarios.actualizarDetalles');
+Route::delete('usuarios/{token_user}', [UsuarioController::class, 'eliminarUsuarioPorToken']);

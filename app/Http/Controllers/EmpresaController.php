@@ -108,44 +108,93 @@ class EmpresaController extends Controller
             ->with('success', 'Empresa deleted successfully');
     }
 
-    // Crear nueva empresa
     public function crearEmpresa(Request $request)
     {
+        // Validar los datos que se recibirán para la creación de la empresa
         $validated = $request->validate(Empresa::$rules);
 
+        // Verificar si ya existe una empresa con el mismo nombre o token_empresa (puedes modificar el campo según tus necesidades)
+        $empresaExistente = Empresa::where('nombre', $validated['nombre'])
+            ->orWhere('correo', $validated['correo'])
+            ->first();
+
+        if ($empresaExistente) {
+            // Si la empresa ya existe, devolver un mensaje de error
+            return response()->json(['message' => 'Ya existe una empresa con ese nombre, correo o token'], 409); // 409 es el código de respuesta para conflicto
+        }
+
+        // Crear la nueva empresa con los datos validados
         $empresa = Empresa::create($validated);
 
+        // Devolver una respuesta JSON indicando que la empresa se ha creado correctamente
         return response()->json([
             'message' => 'Empresa creada correctamente',
             'empresa' => $empresa
-        ], 201);
+        ], 201); // 201 es el código de respuesta para 'Creado'
     }
 
-    public function DetallesEmpresa($id, Request $request)
-{
-    // Buscar la empresa por su ID
-    $empresa = Empresa::find($id);
 
-    // Si no se encuentra la empresa, devolver un mensaje de error
-    if (!$empresa) {
-        return response()->json(['message' => 'Empresa no encontrada'], 404);
+    public function DetallesEmpresa(Request $request)
+    {
+        // Validar los datos del request
+        $validated = $request->validate([
+            'correo' => 'required|email',
+            'contra' => 'nullable|string',
+        ]);
+        
+        // Buscar la empresa por su correo
+        $empresa = Empresa::where('correo', $validated['correo'])->first();
+
+        // Si no se encuentra la empresa, devolver un mensaje de error
+        if (!$empresa) {
+            return response()->json(['message' => 'Empresa no encontrada'], 404);
+        }
+
+        // Si la contraseña no es proporcionada o no es correcta
+        if (!$request->has('contra') || !Hash::check($request->input('contra'), $empresa->contra)) {
+            // Si no se pasa la contraseña o es incorrecta, devolver solo nombre, correo y ubicación
+            $empresaDatos = [
+                'nombre' => $empresa->nombre,
+                'correo' => $empresa->correo,
+                'ubicacion' => $empresa->ubicacion,
+            ];
+        } else {
+            // Si la contraseña es correcta, devolver toda la información de la empresa
+            $empresaDatos = $empresa;
+        }
+
+        // Retornar los datos de la empresa en formato JSON
+        return response()->json($empresaDatos);
     }
 
-    // Si la contraseña no es proporcionada o no es correcta
-    if (!$request->has('password') || !Hash::check($request->input('password'), $empresa->contra)) {
-        // Si no se pasa la contraseña o es incorrecta, devolver solo nombre, correo y ubicación
-        $empresaDatos = [
-            'nombre' => $empresa->nombre,
-            'correo' => $empresa->correo,
-            'ubicacion' => $empresa->ubicacion,
-        ];
-    } else {
-        // Si la contraseña es correcta, devolver toda la información de la empresa
-        $empresaDatos = $empresa;
+
+    public function eliminarEmpresa(Request $request)
+    {
+        // Validar los datos del request
+        $validated = $request->validate([
+            'correo' => 'required|email',
+            'contra' => 'required|string',
+        ]);
+
+        // Buscar la empresa por correo
+        $empresa = Empresa::where('correo', $validated['correo'])->first();
+
+        // Si la empresa no existe, devolver un mensaje de error
+        if (!$empresa) {
+            return response()->json(['message' => 'Empresa no encontrada'], 404);
+        }
+
+        // Verificar si la contraseña proporcionada es correcta
+        if (!Hash::check($validated['contra'], $empresa->contra)) {
+            return response()->json(['message' => 'La contraseña es incorrecta'], 401); // 401 Unauthorized
+        }
+
+        // Eliminar la empresa si las credenciales son correctas
+        $empresa->delete();
+
+        // Retornar respuesta exitosa
+        return response()->json([
+            'message' => 'Empresa eliminada correctamente'
+        ], 200);
     }
-
-    // Retornar los datos de la empresa en formato JSON
-    return response()->json($empresaDatos);
-}
-
 }
