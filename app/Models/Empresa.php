@@ -29,6 +29,8 @@ class Empresa extends Model
         'nombre' => 'required',
         'correo' => 'required',
         'contra' => 'required',
+        'ubicacion' => 'required',
+        'telefono' => 'required',
     ];
 
     // Número de elementos por página en paginación
