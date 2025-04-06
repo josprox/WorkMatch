@@ -109,8 +109,12 @@ class VacanteController extends Controller
             ->with('success', 'Vacante deleted successfully');
     }
 
-    public function consultaVacantes()
+    public function consultaVacantes(Request $request)
     {
+        // Obtener el número de elementos por página (si no se proporciona, usa 10 por defecto)
+        $perPage = $request->input('per_page', 10); // 'per_page' en la URL
+
+        // Realizar la consulta con paginación y ordenar por 'updated_at' de mayor a menor
         $vacantes = Vacante::select(
             'vacantes.titulo',
             'vacantes.descripcion',
@@ -120,8 +124,16 @@ class VacanteController extends Controller
             'empresas.nombre as empresa_nombre'
         )
             ->join('empresas', 'vacantes.empresa_id', '=', 'empresas.id')
-            ->paginate(10); // Quita esto si no quieres paginar
+            ->orderBy('vacantes.updated_at', 'desc') // Ordenar por 'updated_at' descendente
+            ->paginate($perPage); // Usar el valor de per_page
 
-        return response()->json($vacantes);
+        // Incluir la paginación en la respuesta
+        return response()->json([
+            'vacantes' => $vacantes->items(), // Resultados de la página actual
+            'current_page' => $vacantes->currentPage(),
+            'total_pages' => $vacantes->lastPage(),
+            'total_results' => $vacantes->total(),
+            'per_page' => $vacantes->perPage()
+        ]);
     }
 }
