@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Candidatura;
 use App\Models\Empresa;
+use App\Models\Usuario;
 use App\Models\Vacante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +39,7 @@ class CandidaturaController extends Controller
         // Obtener todas las empresas
         $empresas = \App\Models\Empresa::all();  // Cambia 'Empresa' por el nombre de tu modelo de empresas
         $candidatura = new Candidatura();
-        
+
         // Pasar la variable $empresas a la vista
         return view('candidatura.create', compact('candidatura', 'empresas'));
     }
@@ -80,18 +81,18 @@ class CandidaturaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-{
-    $candidatura = Candidatura::findOrFail($id);
-    $empresas = \App\Models\Empresa::all(); // Cargar todas las empresas
-    $vacantes = []; // Inicializar vacantes
-    
-    // Si la candidatura ya tiene empresa asociada, cargar sus vacantes
-    if ($candidatura->empresa_id) {
-        $vacantes = Vacante::where('empresa_id', $candidatura->empresa_id)->get();
+    {
+        $candidatura = Candidatura::findOrFail($id);
+        $empresas = \App\Models\Empresa::all(); // Cargar todas las empresas
+        $vacantes = []; // Inicializar vacantes
+
+        // Si la candidatura ya tiene empresa asociada, cargar sus vacantes
+        if ($candidatura->empresa_id) {
+            $vacantes = Vacante::where('empresa_id', $candidatura->empresa_id)->get();
+        }
+
+        return view('candidatura.edit', compact('candidatura', 'empresas', 'vacantes'));
     }
-    
-    return view('candidatura.edit', compact('candidatura', 'empresas', 'vacantes'));
-}
 
     /**
      * Update the specified resource in storage.
@@ -116,23 +117,23 @@ class CandidaturaController extends Controller
      * 
      */
     public function getVacantesPorEmpresa($empresa_id)
-{
-    // Verificar que la empresa existe primero
-    $empresa = \App\Models\Empresa::find($empresa_id);
-    
-    if (!$empresa) {
-        return response()->json(['error' => 'Empresa no encontrada'], 404);
+    {
+        // Verificar que la empresa existe primero
+        $empresa = \App\Models\Empresa::find($empresa_id);
+
+        if (!$empresa) {
+            return response()->json(['error' => 'Empresa no encontrada'], 404);
+        }
+
+        // Obtener las vacantes activas de la empresa
+        $vacantes = Vacante::where('empresa_id', $empresa_id)
+            ->get(['id', 'titulo']); // Solo los campos necesarios
+
+        return response()->json([
+            'success' => true,
+            'vacantes' => $vacantes
+        ]);
     }
-
-    // Obtener las vacantes activas de la empresa
-    $vacantes = Vacante::where('empresa_id', $empresa_id)
-                      ->get(['id', 'titulo']); // Solo los campos necesarios
-
-    return response()->json([
-        'success' => true,
-        'vacantes' => $vacantes
-    ]);
-}
 
     /**
      * Muestra todas las candidaturas del usuario con filtros opcionales
@@ -172,7 +173,7 @@ class CandidaturaController extends Controller
         ]);
     }
 
-/**
+    /**
      * Método que verifica las credenciales y retorna la información deseada.
      *
      * @param Request $request
@@ -214,7 +215,7 @@ class CandidaturaController extends Controller
             $tokenUser = $candidatura->token_user;
 
             // Hacer la solicitud a la API externa para obtener el first_name y email del usuario
-            (string)$jossred = env("JOSSRED","https://jossred.josprox.com/api/");
+            (string)$jossred = env("JOSSRED", "https://jossred.josprox.com/api/");
             $response = Http::get("{$jossred}jossred/info", [
                 'user_token' => $tokenUser
             ]);
@@ -259,7 +260,7 @@ class CandidaturaController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Actualiza el estado de una candidatura
      *
      * @param  \Illuminate\Http\Request $request
@@ -317,7 +318,7 @@ class CandidaturaController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Elimina una candidatura validando que la empresa es dueña de la vacante
      *
      * @param  \Illuminate\Http\Request $request
@@ -343,9 +344,9 @@ class CandidaturaController extends Controller
         }
 
         // Buscar la candidatura y verificar relación con la empresa
-        $candidatura = Candidatura::with(['vacante' => function($query) use ($empresa) {
-                $query->where('empresa_id', $empresa->id);
-            }])
+        $candidatura = Candidatura::with(['vacante' => function ($query) use ($empresa) {
+            $query->where('empresa_id', $empresa->id);
+        }])
             ->find($request->candidatura_id);
 
         if (!$candidatura || !$candidatura->vacante) {
@@ -368,6 +369,70 @@ class CandidaturaController extends Controller
             ]
         ]);
     }
+
+    /**
+ * Postula un usuario a una vacante como candidato
+ *
+ * @param  \Illuminate\Http\Request $request
+ * @return \Illuminate\Http\Response
+ */
+public function postularUsuario(Request $request)
+{
+    // Validar los datos de entrada
+    $request->validate([
+        'token_user' => 'required|string',
+        'vacante_id' => 'required|integer',
+        'empresa_id' => 'required|integer'
+    ]);
+
+    // Verificar que existe el usuario/cliente
+    $usuario = Usuario::where('token_user', $request->token_user)->first();
+    if (!$usuario) {
+        return response()->json([
+            'success' => false,
+            'message' => 'El usuario/cliente no existe'
+        ], 404);
+    }
+
+    // Verificar que la vacante pertenece a la empresa
+    $vacante = Vacante::where('id', $request->vacante_id)
+                     ->where('empresa_id', $request->empresa_id)
+                     ->first();
+
+    if (!$vacante) {
+        return response()->json([
+            'success' => false,
+            'message' => 'La vacante no pertenece a la empresa especificada'
+        ], 400);
+    }
+
+    // Verificar si el usuario ya está postulado a esta vacante
+    $candidaturaExistente = Candidatura::where('token_user', $request->token_user)
+                                      ->where('vacante_id', $request->vacante_id)
+                                      ->first();
+
+    if ($candidaturaExistente) {
+        return response()->json([
+            'success' => false,
+            'message' => 'El usuario ya está postulado a esta vacante',
+            'data' => $candidaturaExistente
+        ], 400);
+    }
+
+    // Crear la nueva candidatura
+    $candidatura = Candidatura::create([
+        'token_user' => $request->token_user,
+        'empresa_id' => $request->empresa_id,
+        'vacante_id' => $request->vacante_id,
+        'estado' => 'pendiente' // Por defecto
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Usuario postulado correctamente',
+        'data' => $candidatura
+    ], 201);
+}
 
     /**
      * @param int $id
