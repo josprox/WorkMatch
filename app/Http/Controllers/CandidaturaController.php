@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Candidatura;
+use App\Models\Empresa;
 use App\Models\Vacante;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Class CandidaturaController
@@ -166,6 +169,91 @@ class CandidaturaController extends Controller
         return response()->json([
             'success' => true,
             'data' => $candidaturas
+        ]);
+    }
+
+/**
+     * Método que verifica las credenciales y retorna la información deseada.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function obtenerCandidatura(Request $request)
+    {
+        // Validamos que se envíen correo y contraseña
+        $request->validate([
+            'correo' => 'required|email',
+            'contra' => 'required|string',
+        ]);
+
+        // Obtenemos la empresa asociada al correo
+        $empresa = Empresa::where('correo', $request->correo)->first();
+
+        if (!$empresa) {
+            return response()->json(['error' => 'Empresa no encontrada'], 404);
+        }
+
+        // Verificamos que la contraseña sea correcta
+        if (!Hash::check($request->contra, $empresa->contra)) {
+            return response()->json(['error' => 'Contraseña incorrecta'], 401);
+        }
+
+        // Si las credenciales son correctas, obtenemos la candidatura
+        $candidaturas = Candidatura::select('candidaturas.token_user', 'vacantes.titulo', 'candidaturas.estado')
+            ->join('vacantes', 'candidaturas.vacante_id', '=', 'vacantes.id')
+            ->join('empresas', 'vacantes.empresa_id', '=', 'empresas.id')
+            ->where('empresas.id', $empresa->id)
+            ->get();
+
+        // Preparamos una variable para almacenar las candidaturas con la información extra
+        $candidaturasConInfo = [];
+
+        // Recorrer las candidaturas para hacer la solicitud a la API externa
+        foreach ($candidaturas as $candidatura) {
+            // Obtener el token del usuario
+            $tokenUser = $candidatura->token_user;
+
+            // Hacer la solicitud a la API externa para obtener el first_name y email del usuario
+            $response = Http::get("https://jossred.josprox.com/api/jossred/info", [
+                'user_token' => $tokenUser
+            ]);
+
+            // Verificar si la solicitud fue exitosa
+            if ($response->successful()) {
+                $userInfo = $response->json();
+
+                // Verificar si la respuesta contiene los datos necesarios
+                if (isset($userInfo['user']['first_name']) && isset($userInfo['user']['email'])) {
+                    $firstName = $userInfo['user']['first_name'];
+                    $email = $userInfo['user']['email'];
+                } else {
+                    // Si no se obtienen los datos, establecer valores por defecto
+                    $firstName = 'Desconocido';
+                    $email = 'Desconocido';
+                }
+
+                // Combinar los datos de la candidatura con los del usuario
+                $candidaturasConInfo[] = [
+                    'first_name' => $firstName,
+                    'email' => $email,
+                    'titulo' => $candidatura->titulo,
+                    'estado' => $candidatura->estado,
+                ];
+            } else {
+                // Si la solicitud a la API externa falla
+                $candidaturasConInfo[] = [
+                    'first_name' => 'Error',
+                    'email' => 'Error',
+                    'titulo' => $candidatura->titulo,
+                    'estado' => $candidatura->estado,
+                ];
+            }
+        }
+
+        // Devolver la respuesta con las candidaturas y los datos del usuario
+        return response()->json([
+            'success' => true,
+            'data' => $candidaturasConInfo,
         ]);
     }
 

@@ -33,3 +33,4 @@ Route::delete('vacantes/{id}/', [VacanteController::class, 'eliminarVacante']);
 
 // CRUD Candidaturas
 Route::get('/candidaturas/usuario', [CandidaturaController::class, 'candidaturasUsuario']);
+Route::get('candidaturas/obtener', [CandidaturaController::class, 'obtenerCandidatura']);
