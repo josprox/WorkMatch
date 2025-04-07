@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Empresa;
 use App\Models\Vacante;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class VacanteController
@@ -170,5 +171,49 @@ class VacanteController extends Controller
             'total_results' => $vacante->total(),
             'per_page' => $vacante->perPage()
         ]);
+    }
+    public function crearVacante(Request $request)
+    {
+        // Validar los datos de entrada
+        $validated = $request->validate([
+            'correo' => 'required|email', // Correo de la empresa
+            'contra' => 'required|string', // Contraseña de la empresa
+            'titulo' => 'required|string|max:255', // Título de la vacante
+            'descripcion' => 'required|string', // Descripción de la vacante
+            'sueldo' => 'required|numeric', // Sueldo de la vacante
+            'modalidad' => 'required|string', // Modalidad de la vacante (presencial, remoto, etc.)
+        ]);
+
+        // Buscar la empresa por correo electrónico
+        $empresa = Empresa::where('correo', $validated['correo'])->first();
+
+        // Verificar si la empresa existe
+        if (!$empresa) {
+            return response()->json([
+                'message' => 'Empresa no encontrada.'
+            ], 404);
+        }
+
+        // Verificar si la contraseña proporcionada coincide con la almacenada (usando bcrypt)
+        if (!Hash::check($validated['contra'], $empresa->contra)) {
+            return response()->json([
+                'message' => 'La contraseña es incorrecta.'
+            ], 401); // 401 para contraseña incorrecta
+        }
+
+        // Crear la vacante asociada a la empresa
+        $vacante = new Vacante();
+        $vacante->titulo = $validated['titulo'];
+        $vacante->descripcion = $validated['descripcion'];
+        $vacante->sueldo = $validated['sueldo'];
+        $vacante->modalidad = $validated['modalidad'];
+        $vacante->empresa_id = $empresa->id; // Asociamos la vacante con la empresa
+        $vacante->save(); // Guardamos la vacante
+
+        // Responder con éxito
+        return response()->json([
+            'message' => 'Vacante creada exitosamente.',
+            'vacante' => $vacante
+        ], 201); // 201 para recurso creado
     }
 }

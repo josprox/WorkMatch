@@ -25,4 +25,5 @@ Route::delete('usuarios/{token_user}', [UsuarioController::class, 'eliminarUsuar
 
 // CRUD Vacantes
 Route::get('vacantes', [VacanteController::class, 'consultaVacantes']);
+Route::post('vacantes', [VacanteController::class, 'crearVacante']);
 Route::get('vacantes/{id}/', [VacanteController::class, 'consultaVacantePorId']);
