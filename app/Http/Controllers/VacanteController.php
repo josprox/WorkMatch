@@ -276,4 +276,54 @@ class VacanteController extends Controller
             'vacante' => $vacante
         ], 200); // 200 para recurso actualizado
     }
+    public function eliminarVacante(Request $request, $id)
+    {
+        // Validar los datos de entrada
+        $validated = $request->validate([
+            'correo' => 'required|email', // Correo de la empresa
+            'contra' => 'required|string', // Contraseña de la empresa
+        ]);
+
+        // Buscar la empresa por correo electrónico
+        $empresa = Empresa::where('correo', $validated['correo'])->first();
+
+        // Verificar si la empresa existe
+        if (!$empresa) {
+            return response()->json([
+                'message' => 'Empresa no encontrada.'
+            ], 404);
+        }
+
+        // Verificar si la contraseña proporcionada coincide con la almacenada (usando bcrypt)
+        if (!Hash::check($validated['contra'], $empresa->contra)) {
+            return response()->json([
+                'message' => 'La contraseña es incorrecta.'
+            ], 401); // 401 para contraseña incorrecta
+        }
+
+        // Buscar la vacante por ID
+        $vacante = Vacante::find($id);
+
+        // Verificar si la vacante existe
+        if (!$vacante) {
+            return response()->json([
+                'message' => 'Vacante no encontrada.'
+            ], 404);
+        }
+
+        // Verificar si la vacante pertenece a la empresa
+        if ($vacante->empresa_id != $empresa->id) {
+            return response()->json([
+                'message' => 'La vacante no pertenece a esta empresa.'
+            ], 403); // 403 para acción no permitida
+        }
+
+        // Eliminar la vacante
+        $vacante->delete();
+
+        // Responder con éxito
+        return response()->json([
+            'message' => 'Vacante eliminada exitosamente.'
+        ], 200); // 200 para recurso eliminado exitosamente
+    }
 }
