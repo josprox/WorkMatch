@@ -259,6 +259,64 @@ class CandidaturaController extends Controller
         ]);
     }
 
+        /**
+     * Actualiza el estado de una candidatura
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function actualizarEstadoCandidatura(Request $request)
+    {
+        // Validar credenciales de la empresa y datos requeridos
+        $request->validate([
+            'correo' => 'required|email',
+            'contrasena' => 'required|string',
+            'candidatura_id' => 'required|integer',
+            'nuevo_estado' => 'required|string' // Ajusta según tus estados
+        ]);
+
+        // Autenticar empresa
+        $empresa = Empresa::where('correo', $request->correo)->first();
+
+        if (!$empresa || !Hash::check($request->contrasena, $empresa->contra)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Credenciales incorrectas'
+            ], 401);
+        }
+
+        // Obtener la candidatura
+        $candidatura = Candidatura::find($request->candidatura_id);
+
+        // Verificar que la vacante asociada pertenece a la empresa
+        $vacante = Vacante::where('id', $candidatura->vacante_id)
+            ->where('empresa_id', $empresa->id)
+            ->first();
+
+        if (!$vacante) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para modificar esta candidatura'
+            ], 403);
+        }
+
+        // Actualizar el estado
+        $candidatura->estado = $request->nuevo_estado;
+        $candidatura->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado de candidatura actualizado correctamente',
+            'data' => [
+                'candidatura_id' => $candidatura->id,
+                'nuevo_estado' => $candidatura->estado,
+                'vacante_id' => $candidatura->vacante_id,
+                'vacante_titulo' => $vacante->titulo,
+                'token_user' => $candidatura->token_user
+            ]
+        ]);
+    }
+
     /**
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse
