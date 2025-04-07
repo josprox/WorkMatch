@@ -38,12 +38,19 @@
 <div class="form-group mb-3">
     <label class="form-label">{{ Form::label('estado') }}</label>
     <div>
-        {{ Form::text('estado', $candidatura->estado, ['class' => 'form-control' . 
-        ($errors->has('estado') ? ' is-invalid' : ''), 'placeholder' => 'Estado']) }}
+        <select name="estado" id="estado" class="form-control {{ $errors->has('estado') ? 'is-invalid' : '' }}">
+            <option value="">Selecciona el estado</option>
+            <option value="Aprobado" {{ old('estado', $candidatura->estado) == 'Aprobado' ? 'selected' : '' }}>Aprobado</option>
+            <option value="Pendiente" {{ old('estado', $candidatura->estado) == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
+            <option value="En curso" {{ old('estado', $candidatura->estado) == 'En curso' ? 'selected' : '' }}>En curso</option>
+            <option value="Rechazado" {{ old('estado', $candidatura->estado) == 'Rechazado' ? 'selected' : '' }}>Rechazado</option>
+            <option value="Otro" {{ old('estado', $candidatura->estado) == 'Otro' ? 'selected' : '' }}>Otro</option>
+        </select>
         {!! $errors->first('estado', '<div class="invalid-feedback">:message</div>') !!}
         <small class="form-hint">Estado de la candidatura.</small>
     </div>
 </div>
+
 
 <div class="form-footer">
     <div class="text-end">
