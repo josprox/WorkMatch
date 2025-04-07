@@ -57,7 +57,7 @@
                                         <input type="text" class="form-control form-control-sm" value="10" size="3"
                                                aria-label="Invoices count">
                                     </div>
-                                    Entradas
+                                    entradas
                                 </div>
                                 <div class="ms-auto text-muted">
                                     Buscar:
@@ -85,9 +85,10 @@
                                         </svg>
                                     </th>
                                     
-										<th>Token User</th>
-										<th>Empresa Id</th>
-										<th>Vacante Id</th>
+										<th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">Token User</th>
+										<th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">Empresa Id</th>
+										<th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">Vacante Id</th>
+										<th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">Estado</th>
 
                                     <th class="w-1"></th>
                                 </tr>
@@ -103,6 +104,7 @@
 											<td>{{ $candidatura->token_user }}</td>
 											<td>{{ $candidatura->empresa_id }}</td>
 											<td>{{ $candidatura->vacante_id }}</td>
+											<td>{{ $candidatura->estado }}</td>
 
                                         <td>
                                             <div class="btn-list flex-nowrap">
@@ -114,7 +116,7 @@
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <a class="dropdown-item"
                                                            href="{{ route('candidaturas.show',$candidatura->id) }}">
-                                                            Ver
+                                                           Ver
                                                         </a>
                                                         <a class="dropdown-item"
                                                            href="{{ route('candidaturas.edit',$candidatura->id) }}">
@@ -129,7 +131,7 @@
                                                                     onclick="if(!confirm('Do you Want to Proceed?')){return false;}"
                                                                     class="dropdown-item text-red"><i
                                                                     class="fa fa-fw fa-trash"></i>
-                                                                Eliminar
+                                                                Delete
                                                             </button>
                                                         </form>
                                                     </div>

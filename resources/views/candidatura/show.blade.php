@@ -1,6 +1,6 @@
 @extends('tablar::page')
 
-@section('title', 'View Candidatura')
+@section('title', 'Ver Candidatura')
 
 @section('content')
     <!-- Page header -->
@@ -60,6 +60,10 @@
 <div class="form-group">
 <strong>Vacante Id:</strong>
 {{ $candidatura->vacante_id }}
+</div>
+<div class="form-group">
+<strong>Estado:</strong>
+{{ $candidatura->estado }}
 </div>
 
                         </div>

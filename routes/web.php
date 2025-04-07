@@ -29,3 +29,4 @@ Route::middleware('auth')->group(function () {
 Route::get('/register', function () {
     return redirect('/'); // Redirige a la página de login
 });
+Route::resource('/candidatura', App\Http\Controllers\CandidaturaController::class);

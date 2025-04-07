@@ -10,7 +10,7 @@
                 <div class="col">
                     <!-- Page pre-title -->
                     <div class="page-pretitle">
-                        Crear:
+                    Crear:
                     </div>
                     <h2 class="page-title">
                         {{ __('Candidatura ') }}
@@ -45,7 +45,7 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Detalles de la candidatura</h3>
+                        <h3 class="card-title">Detalles de la candidatura</h3>
                         </div>
                         <div class="card-body">
                             <form method="POST" action="{{ route('candidaturas.store') }}" id="ajaxForm" role="form"

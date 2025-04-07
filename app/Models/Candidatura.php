@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property $token_user
  * @property $empresa_id
  * @property $vacante_id
+ * @property $estado
  * @property $created_at
  * @property $updated_at
  *
@@ -35,7 +36,7 @@ class Candidatura extends Model
      *
      * @var array
      */
-    protected $fillable = ['token_user','empresa_id','vacante_id'];
+    protected $fillable = ['token_user','empresa_id','vacante_id','estado'];
 
 
     /**

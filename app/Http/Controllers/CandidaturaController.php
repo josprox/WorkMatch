@@ -150,7 +150,4 @@ class CandidaturaController extends Controller
         return redirect()->route('candidaturas.index')
             ->with('success', 'Candidatura deleted successfully');
     }
-
-
 }
-

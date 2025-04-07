@@ -26,6 +26,15 @@
         <small class="form-hint">ID de la vacante.</small>
     </div>
 </div>
+<div class="form-group mb-3">
+    <label class="form-label">   {{ Form::label('estado') }}</label>
+    <div>
+        {{ Form::text('estado', $candidatura->estado, ['class' => 'form-control' .
+        ($errors->has('estado') ? ' is-invalid' : ''), 'placeholder' => 'Estado']) }}
+        {!! $errors->first('estado', '<div class="invalid-feedback">:message</div>') !!}
+        <small class="form-hint">candidatura <b>estado</b> instruction.</small>
+    </div>
+</div>
 
     <div class="form-footer">
         <div class="text-end">
