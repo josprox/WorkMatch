@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CandidaturaController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VacanteController;
@@ -30,3 +31,6 @@ Route::get('/register', function () {
     return redirect('/'); // Redirige a la página de login
 });
 Route::resource('/candidatura', App\Http\Controllers\CandidaturaController::class);
+// Agregar al archivo routes/web.php
+Route::get('/vacantes/por-empresa/{empresa_id}', [CandidaturaController::class, 'getVacantesPorEmpresa'])
+     ->name('vacantes.por-empresa');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Candidatura;
+use App\Models\Vacante;
 use Illuminate\Http\Request;
 
 /**
@@ -31,9 +32,14 @@ class CandidaturaController extends Controller
      */
     public function create()
     {
+        // Obtener todas las empresas
+        $empresas = \App\Models\Empresa::all();  // Cambia 'Empresa' por el nombre de tu modelo de empresas
         $candidatura = new Candidatura();
-        return view('candidatura.create', compact('candidatura'));
+        
+        // Pasar la variable $empresas a la vista
+        return view('candidatura.create', compact('candidatura', 'empresas'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -71,11 +77,18 @@ class CandidaturaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        $candidatura = Candidatura::find($id);
-
-        return view('candidatura.edit', compact('candidatura'));
+{
+    $candidatura = Candidatura::findOrFail($id);
+    $empresas = \App\Models\Empresa::all(); // Cargar todas las empresas
+    $vacantes = []; // Inicializar vacantes
+    
+    // Si la candidatura ya tiene empresa asociada, cargar sus vacantes
+    if ($candidatura->empresa_id) {
+        $vacantes = Vacante::where('empresa_id', $candidatura->empresa_id)->get();
     }
+    
+    return view('candidatura.edit', compact('candidatura', 'empresas', 'vacantes'));
+}
 
     /**
      * Update the specified resource in storage.
@@ -99,6 +112,24 @@ class CandidaturaController extends Controller
      * Se debe modificar antes de destruir la clase.
      * 
      */
+    public function getVacantesPorEmpresa($empresa_id)
+{
+    // Verificar que la empresa existe primero
+    $empresa = \App\Models\Empresa::find($empresa_id);
+    
+    if (!$empresa) {
+        return response()->json(['error' => 'Empresa no encontrada'], 404);
+    }
+
+    // Obtener las vacantes activas de la empresa
+    $vacantes = Vacante::where('empresa_id', $empresa_id)
+                      ->get(['id', 'titulo']); // Solo los campos necesarios
+
+    return response()->json([
+        'success' => true,
+        'vacantes' => $vacantes
+    ]);
+}
 
     /**
      * Muestra todas las candidaturas del usuario con filtros opcionales
@@ -117,7 +148,7 @@ class CandidaturaController extends Controller
 
         // Obtener el token del usuario desde la solicitud
         $tokenUser = $request->input('token_user');
-        
+
         // Construir la consulta base
         $query = Candidatura::with(['empresa', 'vacante'])
             ->where('token_user', $tokenUser)
