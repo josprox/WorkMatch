@@ -117,6 +117,7 @@ class VacanteController extends Controller
 
         // Realizar la consulta con paginación y ordenar por 'updated_at' de mayor a menor
         $vacantes = Vacante::select(
+            'vacantes.id',
             'vacantes.titulo',
             'vacantes.descripcion',
             'vacantes.sueldo',
