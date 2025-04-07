@@ -214,7 +214,8 @@ class CandidaturaController extends Controller
             $tokenUser = $candidatura->token_user;
 
             // Hacer la solicitud a la API externa para obtener el first_name y email del usuario
-            $response = Http::get("https://jossred.josprox.com/api/jossred/info", [
+            (string)$jossred = env("JOSSRED","https://jossred.josprox.com/api/");
+            $response = Http::get("{$jossred}jossred/info", [
                 'user_token' => $tokenUser
             ]);
 
