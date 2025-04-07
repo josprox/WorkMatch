@@ -317,6 +317,58 @@ class CandidaturaController extends Controller
         ]);
     }
 
+        /**
+     * Elimina una candidatura validando que la empresa es dueña de la vacante
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function eliminarCandidaturaSegura(Request $request)
+    {
+        // Validar datos de entrada
+        $request->validate([
+            'correo' => 'required|email',
+            'contrasena' => 'required|string',
+            'candidatura_id' => 'required|integer'
+        ]);
+
+        // Autenticar empresa
+        $empresa = Empresa::where('correo', $request->correo)->first();
+
+        if (!$empresa || !Hash::check($request->contrasena, $empresa->contra)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Credenciales incorrectas'
+            ], 401);
+        }
+
+        // Buscar la candidatura y verificar relación con la empresa
+        $candidatura = Candidatura::with(['vacante' => function($query) use ($empresa) {
+                $query->where('empresa_id', $empresa->id);
+            }])
+            ->find($request->candidatura_id);
+
+        if (!$candidatura || !$candidatura->vacante) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para eliminar esta candidatura o no existe'
+            ], 403);
+        }
+
+        // Eliminar la candidatura
+        $candidatura->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Candidatura eliminada correctamente',
+            'data' => [
+                'id_eliminado' => $request->candidatura_id,
+                'empresa' => $empresa->nombre,
+                'vacante' => $candidatura->vacante->titulo
+            ]
+        ]);
+    }
+
     /**
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse
