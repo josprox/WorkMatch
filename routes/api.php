@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CandidaturaController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VacanteController;
@@ -29,3 +30,6 @@ Route::post('vacantes', [VacanteController::class, 'crearVacante']);
 Route::get('vacantes/{id}/', [VacanteController::class, 'consultaVacantePorId']);
 Route::put('vacantes/{id}/', [VacanteController::class, 'actualizarVacante']);
 Route::delete('vacantes/{id}/', [VacanteController::class, 'eliminarVacante']);
+
+// CRUD Candidaturas
+Route::get('/candidaturas/usuario', [CandidaturaController::class, 'candidaturasUsuario']);
