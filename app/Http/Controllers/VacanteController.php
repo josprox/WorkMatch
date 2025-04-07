@@ -216,4 +216,64 @@ class VacanteController extends Controller
             'vacante' => $vacante
         ], 201); // 201 para recurso creado
     }
+
+    public function actualizarVacante(Request $request, $id)
+    {
+        // Validar los datos de entrada
+        $validated = $request->validate([
+            'correo' => 'required|email', // Correo de la empresa
+            'contra' => 'required|string', // Contraseña de la empresa
+            'titulo' => 'nullable|string|max:255', // Título de la vacante
+            'descripcion' => 'nullable|string', // Descripción de la vacante
+            'sueldo' => 'nullable|numeric', // Sueldo de la vacante
+            'modalidad' => 'nullable|string', // Modalidad de la vacante (presencial, remoto, etc.)
+        ]);
+
+        // Buscar la empresa por correo electrónico
+        $empresa = Empresa::where('correo', $validated['correo'])->first();
+
+        // Verificar si la empresa existe
+        if (!$empresa) {
+            return response()->json([
+                'message' => 'Empresa no encontrada.'
+            ], 404);
+        }
+
+        // Verificar si la contraseña proporcionada coincide con la almacenada (usando bcrypt)
+        if (!Hash::check($validated['contra'], $empresa->contra)) {
+            return response()->json([
+                'message' => 'La contraseña es incorrecta.'
+            ], 401); // 401 para contraseña incorrecta
+        }
+
+        // Buscar la vacante por ID
+        $vacante = Vacante::find($id);
+
+        // Verificar si la vacante existe
+        if (!$vacante) {
+            return response()->json([
+                'message' => 'Vacante no encontrada.'
+            ], 404);
+        }
+
+        // Verificar si la vacante pertenece a la empresa
+        if ($vacante->empresa_id != $empresa->id) {
+            return response()->json([
+                'message' => 'La vacante no pertenece a esta empresa.'
+            ], 403); // 403 para acción no permitida
+        }
+
+        // Actualizar los campos de la vacante con los datos proporcionados
+        $vacante->titulo = $validated['titulo'] ?? $vacante->titulo; // Mantener el valor anterior si no se proporciona uno nuevo
+        $vacante->descripcion = $validated['descripcion'] ?? $vacante->descripcion;
+        $vacante->sueldo = $validated['sueldo'] ?? $vacante->sueldo;
+        $vacante->modalidad = $validated['modalidad'] ?? $vacante->modalidad;
+        $vacante->save(); // Guardar los cambios
+
+        // Responder con éxito
+        return response()->json([
+            'message' => 'Vacante actualizada exitosamente.',
+            'vacante' => $vacante
+        ], 200); // 200 para recurso actualizado
+    }
 }
