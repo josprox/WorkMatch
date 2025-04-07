@@ -199,7 +199,7 @@ class CandidaturaController extends Controller
         }
 
         // Si las credenciales son correctas, obtenemos la candidatura
-        $candidaturas = Candidatura::select('candidaturas.token_user', 'vacantes.titulo', 'candidaturas.estado')
+        $candidaturas = Candidatura::select('candidaturas.id', 'candidaturas.token_user', 'vacantes.titulo', 'candidaturas.estado')
             ->join('vacantes', 'candidaturas.vacante_id', '=', 'vacantes.id')
             ->join('empresas', 'vacantes.empresa_id', '=', 'empresas.id')
             ->where('empresas.id', $empresa->id)
@@ -235,6 +235,7 @@ class CandidaturaController extends Controller
 
                 // Combinar los datos de la candidatura con los del usuario
                 $candidaturasConInfo[] = [
+                    'id' => $candidatura->id,
                     'first_name' => $firstName,
                     'email' => $email,
                     'titulo' => $candidatura->titulo,
